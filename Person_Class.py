@@ -1,6 +1,6 @@
-import random
+import random, string
 
-company = ['red', 'blue', 'orange', 'green']
+company = ['red car', 'blue wagon', 'orange', 'green engine']
 domain = ['school.edu', 'business.com', 'organization.org', 'government.gov', 'network.net']
 letters = 'abcdefghijklmnopqrstuvwxyz'
 digits = '0123456789'
@@ -24,23 +24,24 @@ class Person:
             trunclast = self.l[0:6]
         self.a = (self.f[0] + trunclast + '@' + random.choice(domain)).lower()
         # company name
-        self.c = random.choice(company).capitalize()
+        self.c = string.capwords(random.choice(company))
         # random number
         self.n = randomnum(random.randrange(4,8))
- 
+
 PersonList = []       
-for i in range(2000):
+for i in range(20):
     i = Person()
     PersonList.append(i)
 
 
 x = random.choice(PersonList)
 
+
 """
 print(x.f)
 """
 
-"""
+
 for i in PersonList:
     print('===================================')
     print('First Name is: ' + i.f)
@@ -49,4 +50,3 @@ for i in PersonList:
     print('Company is: ' + i.c)
     print('Number is: ' + i.n)
     print('===================================')
-"""
