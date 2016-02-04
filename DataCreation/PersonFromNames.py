@@ -1,16 +1,15 @@
-import random, string, names
+import random, string, names, pickle, time
 
+# Initial values for semi-random portions
 company = ['red car', 'blue wagon', 'orange', 'green engine']
 domain = ['school.edu', 'business.com', 'organization.org', 'government.gov', 'network.net']
-letters = 'abcdefghijklmnopqrstuvwxyz'
 digits = '0123456789'
 
-def randomstr(i):
-    return ''.join(random.choice(letters) for _ in range(i))
-    
+# Generate a random string of 'i' digits
 def randomnum(i):
     return ''.join(random.choice(digits) for _ in range(i))
 
+# Creates a Person object with first and last names, email address, company, and a random number
 class Person:
     def __init__(self):
         # first name
@@ -28,25 +27,22 @@ class Person:
         # random number
         self.n = randomnum(random.randrange(4,8))
 
+# Log the process start time and alert the user
+starttime = time.time()
+print('Creating people...')
+
+# Loop to generate people and add them to the list
 PersonList = []       
-for i in range(20):
+for i in range(50000):
     i = Person()
     PersonList.append(i)
 
+# Alert the user that people creation finished and the process duration.    
+print('People created. Time elapsed: ' + str(time.time() - starttime))
 
-x = random.choice(PersonList)
+# Open a new binary file to store the people.
+namedump = open('Soylent.green', 'wb')
+pickle.dump(PersonList, namedump)
 
-
-"""
-print(x.f)
-"""
-
-
-for i in PersonList:
-    print('===================================')
-    print('First Name is: ' + i.f)
-    print('Last Name is: ' + i.l)
-    print('Email Address is: ' + i.a)
-    print('Company is: ' + i.c)
-    print('Number is: ' + i.n)
-    print('===================================')
+# Alert the user that the people are binned, and how long this process took.
+print('Soylent.green is people. Total time elapsed: ' + str(time.time() - starttime))
