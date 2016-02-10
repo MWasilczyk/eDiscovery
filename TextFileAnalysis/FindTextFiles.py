@@ -1,9 +1,15 @@
+'''
+Copied from:
+http://hundredminutehack.blogspot.com/2016/02/processing-lots-of-text-files-with.html
+
+Prefix for UNC raw quotes: r'\\uncpath\dir\dir'
+'''
 import os
-# from collections import Counter
-# prefix for UNC raw quotes: r'\\uncpath\dir\dir'
+from collections import Counter
+
 
 def pyfiles():
-    base_dir = "/Users/mikew/OneDrive/Documents/GitHub/eDiscovery"
+    base_dir = "/Users/UserName/Directory"
     for dir_name, child_dirs, files in os.walk(base_dir):
         for file_name in files:
             if file_name.endswith(".py"):
@@ -21,7 +27,7 @@ def pick_lines(file_name):
 for pyfile in pyfiles():
     print(pyfile)
 
-'''
+
 region_types = []
 for pyfile in pyfiles():
     for line in pick_lines(pyfile):
@@ -37,4 +43,3 @@ counts = Counter(sorted(region_types))
 for key, val in counts.items():
     print("{}: {}".format(key, val))
     
-'''
