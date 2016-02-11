@@ -2,6 +2,9 @@
 Copied from:
 http://hundredminutehack.blogspot.com/2016/02/processing-lots-of-text-files-with.html
 
+Suggestion:
+Replace os.walk() with scandir()
+
 Prefix for UNC raw quotes: r'\\uncpath\dir\dir'
 '''
 import os
