@@ -10,6 +10,7 @@ import glob
 
 DATList = glob.glob('./*.dat')
 print(DATList)
+print('\r\n########################\r\n')
 
 '''
 # Check encoding of file - MAY BE SLOW
@@ -19,52 +20,86 @@ with open(DATList[0], 'rb') as f:
 '''
 
 DATFile = pd.read_csv(DATList[0], sep='|', quotechar = '^', encoding='cp1252')
-print(DATFile.describe())
-print('\r\n########################\r\n')
+#print(DATFile.describe())
+#print('\r\n########################\r\n')
 
 print(list(DATFile))
 print('\r\n########################\r\n')
 
 print('Length of DAT: ' + str(len(DATFile)))
-print('\r\n########################\r\n')
 
-DATSummary = pd.DataFrame()
+DATSummary = pd.DataFrame(columns=['Field',
+                                   'Count',
+                                   'Unique',
+                                   'MinLength',
+                                   'MaxLength',
+                                   'Most Common',
+                                   'Minimum',
+                                   'Maximum'])
+
 for column in DATFile:
-#    try:    
-#        FirstRecord = DATFile[column].iloc[DATFile[column].first_valid_index()]
-#    except:
-#        FirstRecord = 'UNAVAILABLE'
     DATFile[column] = DATFile[column].astype('str')
+    ThisSeries = DATFile[DATFile[column] != 'nan'][column]
     try:
-        RecordCount = DATFile[DATFile[column] != 'nan'][column].count()
+        RecordCount = ThisSeries.count()
     except:
-        RecordCount = 'UNAVAILABLE'
+        RecordCount = 'NULL'
     try: 
-        UniqueCount = DATFile[column].nunique()
+        UniqueCount = ThisSeries.nunique()
     except:
-        UniqueCount = 'UNAVAILABLE'
+        UniqueCount = 'NULL'
     try:
-        MostCommon = DATFile[DATFile[column] != 'nan'][column].value_counts().idxmax()
+        MinLength = min(ThisSeries.str.len())
     except:
-        MostCommon = 'UNAVAILABLE'
+        MinLength = 'NULL'
+    try:
+        MaxLength = max(ThisSeries.str.len())
+    except:
+        MaxLength = 'NULL'
+    try:
+        MostCommon = ThisSeries.value_counts().idxmax()
+        MostCommon = '[' + str(max(ThisSeries.value_counts())) +'] ' + MostCommon
+    except:
+        MostCommon = 'NULL'
     try:    
-        MinResult = min(DATFile[DATFile[column] != 'nan'][column])
+        MinResult = ThisSeries.min()
     except:
-        MinResult = 'UNAVAILABLE'
+        MinResult = 'NULL'
     try:    
-        MaxResult = max(DATFile[DATFile[column] != 'nan'][column])
+        MaxResult = ThisSeries.max()
     except:
-        MaxResult = 'UNAVAILABLE'        
+        MaxResult = 'NULL'        
     FieldSummary = {'Field':column,
                     'Count':RecordCount,
-                    'CountUnique':UniqueCount,
+                    'Unique':UniqueCount,
+                    'MinLength':MinLength,
+                    'MaxLength':MaxLength,
                     'Most Common':MostCommon,
-#                    'First non-null':FirstRecord,
                     'Minimum':MinResult,
                     'Maximum':MaxResult}
     DATSummary = DATSummary.append(FieldSummary, ignore_index=True)
-    
+
 writer = pd.ExcelWriter('Summary.xlsx', engine='xlsxwriter')
 workbook = writer.book
 DATSummary.to_excel(writer, sheet_name = 'Full', index=False)
+
+format1 = workbook.add_format()
+format1.set_text_wrap()
+format1.set_align('left')
+format1.set_align('top')
+
+format2 = workbook.add_format({'bold': 1, 
+                               'italic': 1,
+                               'bg_color': '#FFC7CE'})
+
+worksheet = writer.sheets['Full']
+worksheet.set_column('A:A',25,format1)
+worksheet.set_column('B:E',8,format1)
+worksheet.set_column('F:H',80,format1)  
+
+worksheet.conditional_format('D2:F50', {'type':     'text',
+                                        'criteria': 'containing',
+                                        'value':    'NULL',
+                                        'format':   format2})
+
 writer.save()
