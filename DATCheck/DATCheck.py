@@ -28,22 +28,25 @@ print('\r\n########################\r\n')
 print('Length of DAT: ' + str(len(DATFile)))
 print('\r\n########################\r\n')
 
-'''
-for column in DATFile:
-    try:
-        MinResult = min(DATFile[column])
-    except:
-        DATFile[column] = DATFile[column].astype('str')
-'''
-
-
 DATSummary = pd.DataFrame()
 for column in DATFile:
-    try:    
-        FirstRecord = DATFile[column].iloc[DATFile[column].first_valid_index()]
-    except:
-        FirstRecord = 'UNAVAILABLE'
+#    try:    
+#        FirstRecord = DATFile[column].iloc[DATFile[column].first_valid_index()]
+#    except:
+#        FirstRecord = 'UNAVAILABLE'
     DATFile[column] = DATFile[column].astype('str')
+    try:
+        RecordCount = DATFile[DATFile[column] != 'nan'][column].count()
+    except:
+        RecordCount = 'UNAVAILABLE'
+    try: 
+        UniqueCount = DATFile[column].nunique()
+    except:
+        UniqueCount = 'UNAVAILABLE'
+    try:
+        MostCommon = DATFile[DATFile[column] != 'nan'][column].value_counts().idxmax()
+    except:
+        MostCommon = 'UNAVAILABLE'
     try:    
         MinResult = min(DATFile[DATFile[column] != 'nan'][column])
     except:
@@ -53,14 +56,14 @@ for column in DATFile:
     except:
         MaxResult = 'UNAVAILABLE'        
     FieldSummary = {'Field':column,
-                    'First':FirstRecord,
+                    'Count':RecordCount,
+                    'CountUnique':UniqueCount,
+                    'Most Common':MostCommon,
+#                    'First non-null':FirstRecord,
                     'Minimum':MinResult,
                     'Maximum':MaxResult}
     DATSummary = DATSummary.append(FieldSummary, ignore_index=True)
     
-
-print(DATSummary)
-
 writer = pd.ExcelWriter('Summary.xlsx', engine='xlsxwriter')
 workbook = writer.book
 DATSummary.to_excel(writer, sheet_name = 'Full', index=False)
